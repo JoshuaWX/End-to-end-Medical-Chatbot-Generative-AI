@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MedGuard Health Chatbot</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<link rel="stylesheet" href="/dist/output.css">
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col h-screen max-w-md mx-auto bg-gradient-to-b from-primary/10 to-background-light dark:from-primary/20 dark:to-background-dark">
+<header class="flex items-center justify-between p-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-primary/20 dark:border-primary/30">
+<button id="btn-back" type="button" aria-label="Go back" title="Go back" class="text-gray-700 dark:text-gray-300">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="AI Assistant Avatar" class="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD58a5UD08npEzMAZTBkCnx6s4GlnRgrDf96QEQVAYKZV209SCbDIETlwjlhZ9tfYzjefwyPsqoGvgIAY4zKFzaf_EuNu4nSu3WlGzP1ElF7dsYolWXKiaXm05S3lbDB_r-pTyMfo3OCVEQ-WH4zNMRPyAkCpEutWmfVmLNHBpXtL8FyP0zy7tgwTqHG5qxFpF_yG9W15ax70rkI2UvyzSOQm4Jvm6i2tL5NTu3jI4ny_4joMPeiaR842tMldIOW1ZVbRTFjWBM4SY"/>
+<span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-background-light dark:border-background-dark"></span>
+</div>
+<div class="text-left">
+<h1 class="text-base font-bold text-gray-900 dark:text-white">AI Health Chatbot</h1>
+<p class="text-xs text-green-500">Online</p>
+</div>
+</div>
+<button class="text-gray-700 dark:text-gray-300">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</header>
+<main id="chat-log" class="flex-1 overflow-y-auto p-4 space-y-6">
+<div class="flex items-start gap-3">
+<img alt="AI Assistant Avatar" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD58a5UD08npEzMAZTBkCnx6s4GlnRgrDf96QEQVAYKZV209SCbDIETlwjlhZ9tfYzjefwyPsqoGvgIAY4zKFzaf_EuNu4nSu3WlGzP1ElF7dsYolWXKiaXm05S3lbDB_r-pTyMfo3OCVEQ-WH4zNMRPyAkCpEutWmfVmLNHBpXtL8FyP0zy7tgwTqHG5qxFpF_yG9W15ax70rkI2UvyzSOQm4Jvm6i2tL5NTu3jI4ny_4joMPeiaR842tMldIOW1ZVbRTFjWBM4SY"/>
+<div class="flex flex-col items-start max-w-[80%]">
+<div class="bg-primary/10 dark:bg-primary/20 p-3 rounded-lg rounded-tl-none">
+<p class="text-sm text-gray-800 dark:text-gray-200">
+                            Hello! I'm your MedGuard AI Health Assistant. I'm here to help you understand your symptoms. Please describe how you're feeling today.
+                        </p>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400 mt-1">10:30 AM</span>
+</div>
+</div>
+<div class="flex items-start gap-3 justify-end">
+<div class="flex flex-col items-end max-w-[80%]">
+<div class="bg-primary p-3 rounded-lg rounded-tr-none">
+<p class="text-sm text-white">
+                            I have a fever, headache, and body aches. I feel very tired.
+                        </p>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400 mt-1">10:31 AM</span>
+</div>
+<img alt="User Avatar" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPsWnSUqWd3EjRU1gYk8DOpHFbde8DB3p_pMOyW_gVd3LxbEk1U-nYi0fwuAz4i3w-X59Y6u-9FgRL0k6evcCAqn0VoR972r95_9ClBsk1vEcUYn3doIpL6rXNULoHlpoFp6xAz4dJHn4SxZEgTt0i8SVb5-6-qtUK6II8Pkg2lxYdu8L7ddnhWoZsaA5nQ14AvsW1xWuPzDD3r6jin7jTywl6nDm-myKNRLMWq2r9ctwH-XfV6DPpgbpOzVBHXCZ72cXe3eGr-GU"/>
+</div>
+<div class="flex items-start gap-3">
+<img alt="AI Assistant Avatar" class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD58a5UD08npEzMAZTBkCnx6s4GlnRgrDf96QEQVAYKZV209SCbDIETlwjlhZ9tfYzjefwyPsqoGvgIAY4zKFzaf_EuNu4nSu3WlGzP1ElF7dsYolWXKiaXm05S3lbDB_r-pTyMfo3OCVEQ-WH4zNMRPyAkCpEutWmfVmLNHBpXtL8FyP0zy7tgwTqHG5qxFpF_yG9W15ax70rkI2UvyzSOQm4Jvm6i2tL5NTu3jI4ny_4joMPeiaR842tMldIOW1ZVbRTFjWBM4SY"/>
+<div class="flex flex-col items-start max-w-[80%]">
+<div class="bg-primary/10 dark:bg-primary/20 p-3 rounded-lg rounded-tl-none space-y-3">
+<p class="text-sm text-gray-800 dark:text-gray-200">
+                           Thank you for sharing. Based on your symptoms, here is a possible analysis:
+                        </p>
+<div class="bg-background-light dark:bg-background-dark/50 p-3 rounded-lg border border-primary/20">
+<h3 class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2"><span class="material-symbols-outlined text-base">sick</span> Illness Prediction</h3>
+<p class="text-sm text-gray-700 dark:text-gray-300 mt-1">Malaria or a viral infection are common possibilities.</p>
+</div>
+<div class="bg-background-light dark:bg-background-dark/50 p-3 rounded-lg border border-primary/20">
+<h3 class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-2"><span class="material-symbols-outlined text-base">vaccines</span> Medication Advice</h3>
+<p class="text-sm text-gray-700 dark:text-gray-300 mt-1">Consider taking paracetamol for fever and pain. Rest and stay hydrated.</p>
+</div>
+<div class="bg-yellow-100/50 dark:bg-yellow-900/30 p-2 rounded-lg text-center mt-2 border border-yellow-500/30">
+<p class="text-xs text-yellow-800 dark:text-yellow-300"><span class="font-bold">Disclaimer:</span> This is not a substitute for a medical diagnosis. Please consult a doctor for an accurate diagnosis.</p>
+</div>
+</div>
+<span class="text-xs text-gray-500 dark:text-gray-400 mt-1">10:32 AM</span>
+</div>
+</div>
+</main>
+<footer class="bg-background-light dark:bg-background-dark p-4 border-t border-primary/20 dark:border-primary/30">
+<div class="flex items-center gap-3">
+<div class="flex-1 relative">
+<input id="chat-input" class="w-full bg-primary/10 dark:bg-primary/20 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border-2 border-transparent focus:border-primary rounded-full py-2.5 pl-4 pr-12 text-sm focus:outline-none focus:ring-0 transition-colors" placeholder="Describe your symptoms..." type="text" autocomplete="off"/>
+<button class="absolute inset-y-0 right-0 flex items-center justify-center px-3 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+</div>
+<button id="chat-send" class="bg-primary text-white rounded-full p-3 flex-shrink-0 hover:bg-primary/90 transition-colors" aria-label="Send message" type="button">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</footer>
+</div>
+
+</body></html>
+<script>
+    // Enable back navigation from the top-left arrow
+    document.addEventListener('DOMContentLoaded', function () {
+        var back = document.getElementById('btn-back');
+        if (back) {
+            back.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (window.history && window.history.length > 1) {
+                    window.history.back();
+                } else {
+                                        // Fallback if there's no history (direct navigation)
+                                        // Prefer returning to the MedGuard UI (Vite dev server) when coming from there.
+                                        try {
+                                            if (document.referrer) {
+                                                var refUrl = new URL(document.referrer);
+                                                // If the referrer looks like the MedGuard dev server, go back there.
+                                                if (refUrl.port === '5173') {
+                                                    window.location.href = refUrl.origin + '/home.html';
+                                                    return;
+                                                }
+                                            }
+                                        } catch (_) {}
+                                        window.location.href = 'http://localhost:5173/home.html';
+                }
+            });
+        }
+    });
+</script>
+
+<script>
+    // Minimal functional chat wiring: POST msg to /get and append the reply.
+    document.addEventListener('DOMContentLoaded', function () {
+        var input = document.getElementById('chat-input');
+        var sendBtn = document.getElementById('chat-send');
+        var log = document.getElementById('chat-log');
+
+        if (!input || !sendBtn || !log) return;
+
+        function nowLabel() {
+            try {
+                return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } catch (_) {
+                return '';
+            }
+        }
+
+        function escapeHtml(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function appendUser(text) {
+            var t = escapeHtml(text);
+            var ts = nowLabel();
+            var wrap = document.createElement('div');
+            wrap.className = 'flex items-start gap-3 justify-end';
+            wrap.innerHTML = "" +
+                "<div class='flex flex-col items-end max-w-[80%]'>" +
+                    "<div class='bg-primary p-3 rounded-lg rounded-tr-none'>" +
+                        "<p class='text-sm text-white'>" + t + "</p>" +
+                    "</div>" +
+                    "<span class='text-xs text-gray-500 dark:text-gray-400 mt-1'>" + ts + "</span>" +
+                "</div>";
+            log.appendChild(wrap);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function appendBot(text) {
+            var t = escapeHtml(text);
+            var ts = nowLabel();
+            var wrap = document.createElement('div');
+            wrap.className = 'flex items-start gap-3';
+            wrap.innerHTML = "" +
+                "<div class='flex flex-col items-start max-w-[80%]'>" +
+                    "<div class='bg-primary/10 dark:bg-primary/20 p-3 rounded-lg rounded-tl-none'>" +
+                        "<p class='text-sm text-gray-800 dark:text-gray-200'>" + t + "</p>" +
+                    "</div>" +
+                    "<span class='text-xs text-gray-500 dark:text-gray-400 mt-1'>" + ts + "</span>" +
+                "</div>";
+            log.appendChild(wrap);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function send() {
+            var text = (input.value || '').trim();
+            if (!text) return;
+            input.value = '';
+            appendUser(text);
+
+            sendBtn.disabled = true;
+            try {
+                var params = new URLSearchParams();
+                params.set('msg', text);
+                var res = await fetch('/get', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString()
+                });
+                if (!res.ok) {
+                    appendBot('Sorry — the chatbot server returned an error.');
+                    return;
+                }
+                var answer = await res.text();
+                appendBot(answer || "I don't know.");
+            } catch (e) {
+                appendBot('Sorry — could not reach the chatbot server.');
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        sendBtn.addEventListener('click', send);
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                send();
+            }
+        });
+    });
+</script>
