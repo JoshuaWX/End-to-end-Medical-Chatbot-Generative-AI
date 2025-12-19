@@ -136,7 +136,7 @@ def _friendly_provider_message(err: Exception) -> str:
     if _looks_like_rate_limit_error(err):
         return (
             "I can’t answer , you have used up your free plan limit for the day. "
-            "Please try again later,You've hit the free plan limit"
+            "Please try in 24 hours or upgrade your plan."
         )
     if _looks_like_transient_provider_error(err):
         return "I encountered an Issue. Please try again in a moment."
@@ -388,7 +388,7 @@ def chat():
         urgent = (
             "I’m not able to help safely with that as a chatbot. "
             "If you think this could be an emergency, call your local emergency number now or go to the nearest emergency department. "
-            "If you’re in the U.S., you can call or text 988 for immediate help."
+            "If you’re in the U.S., you can call or text 112 for immediate help."
         )
         if request.is_json:
             return jsonify({"answer": urgent})
@@ -406,8 +406,8 @@ def chat():
         if request.is_json:
             # Return 200 so the frontend doesn't log noisy 500s for expected provider failures.
             if _looks_like_rate_limit_error(e):
-                answer = retrieval_only_fallback(msg, meta=meta, history=history)
-                return jsonify({"answer": answer, "ok": False, "limited": True})
+                friendly = _friendly_provider_message(e)
+                return jsonify({"answer": friendly, "ok": False, "limited": True})
 
             friendly = _friendly_provider_message(e)
             return jsonify({"answer": friendly, "ok": False})
