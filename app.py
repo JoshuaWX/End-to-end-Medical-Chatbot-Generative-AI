@@ -12,6 +12,7 @@ from typing import Any
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request, session
+from flask_cors import CORS
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
@@ -19,6 +20,14 @@ from langchain_pinecone import PineconeVectorStore
 
 from src.helper import download_hugging_face_embeddings
 from src.prompt import system_prompt
+
+# Supabase for persistent chat storage
+try:
+    from supabase import create_client, Client
+    SUPABASE_AVAILABLE = True
+except ImportError:
+    SUPABASE_AVAILABLE = False
+    print("Warning: supabase package not installed. Chat persistence disabled.")
 
 
 def required_env(name: str) -> str:
@@ -43,10 +52,27 @@ app = Flask(
     static_url_path="/dist",
 )
 
+# Enable CORS for frontend on different port
+CORS(app, supports_credentials=True, origins=["http://localhost:5173", "http://127.0.0.1:5173"])
+
 # Session configuration for conversation memory
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "medguard-secret-key-change-in-production")
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
+
+# Initialize Supabase client
+supabase_client: Client | None = None
+if SUPABASE_AVAILABLE:
+    SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://cddfhyxlhtmrrtduwlqd.supabase.co")
+    SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_SERVICE_KEY") or os.environ.get("SUPABASE_ANON_KEY", "")
+    if SUPABASE_URL and SUPABASE_KEY:
+        try:
+            supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
+            print("Supabase client initialized for chat persistence.")
+        except Exception as e:
+            print(f"Warning: Could not initialize Supabase client: {e}")
+            supabase_client = None
+
 
 # Server-side conversation memory store (keyed by session_id)
 # In production, replace with Redis or a database
@@ -695,6 +721,7 @@ def index():
         "location": (request.args.get("location") or "").strip(),
         "age": (request.args.get("age") or "").strip(),
         "gender": (request.args.get("gender") or "").strip(),
+        "user_id": (request.args.get("user_id") or "").strip(),
     }
 
     display_name = meta.get("first_name") or "there"
@@ -815,6 +842,168 @@ def session_info():
         "history_messages": history_count,
         "active_sessions": len(conversation_memory),
     })
+
+
+# ============================================================================
+# SUPABASE CHAT PERSISTENCE ENDPOINTS
+# ============================================================================
+
+@app.route("/api/conversations", methods=["GET"])
+def get_conversations():
+    """Get all conversations for a user."""
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"error": "user_id required"}), 400
+    
+    if not supabase_client:
+        return jsonify({"error": "Chat persistence not available"}), 503
+    
+    try:
+        result = supabase_client.table("chat_conversations") \
+            .select("*") \
+            .eq("user_id", user_id) \
+            .order("updated_at", desc=True) \
+            .execute()
+        
+        return jsonify({"conversations": result.data, "ok": True})
+    except Exception as e:
+        print(f"Error fetching conversations: {e}")
+        return jsonify({"error": str(e), "ok": False}), 500
+
+
+@app.route("/api/conversations", methods=["POST"])
+def create_conversation():
+    """Create a new conversation for a user."""
+    data = request.get_json() or {}
+    user_id = data.get("user_id")
+    title = data.get("title", "New Chat")
+    
+    if not user_id:
+        return jsonify({"error": "user_id required"}), 400
+    
+    if not supabase_client:
+        return jsonify({"error": "Chat persistence not available"}), 503
+    
+    try:
+        result = supabase_client.table("chat_conversations") \
+            .insert({"user_id": user_id, "title": title}) \
+            .execute()
+        
+        if result.data:
+            return jsonify({"conversation": result.data[0], "ok": True})
+        return jsonify({"error": "Failed to create conversation"}), 500
+    except Exception as e:
+        print(f"Error creating conversation: {e}")
+        return jsonify({"error": str(e), "ok": False}), 500
+
+
+@app.route("/api/conversations/<conversation_id>", methods=["GET"])
+def get_conversation_messages(conversation_id: str):
+    """Get all messages for a conversation."""
+    if not supabase_client:
+        return jsonify({"error": "Chat persistence not available"}), 503
+    
+    try:
+        # Get conversation info
+        conv_result = supabase_client.table("chat_conversations") \
+            .select("*") \
+            .eq("id", conversation_id) \
+            .single() \
+            .execute()
+        
+        # Get messages
+        msg_result = supabase_client.table("chat_messages") \
+            .select("*") \
+            .eq("conversation_id", conversation_id) \
+            .order("created_at", desc=False) \
+            .execute()
+        
+        return jsonify({
+            "conversation": conv_result.data,
+            "messages": msg_result.data,
+            "ok": True
+        })
+    except Exception as e:
+        print(f"Error fetching conversation messages: {e}")
+        return jsonify({"error": str(e), "ok": False}), 500
+
+
+@app.route("/api/conversations/<conversation_id>/messages", methods=["POST"])
+def add_message(conversation_id: str):
+    """Add a message to a conversation."""
+    data = request.get_json() or {}
+    role = data.get("role")
+    content = data.get("content")
+    metadata = data.get("metadata", {})
+    
+    if not role or not content:
+        return jsonify({"error": "role and content required"}), 400
+    
+    if role not in ("user", "assistant"):
+        return jsonify({"error": "role must be 'user' or 'assistant'"}), 400
+    
+    if not supabase_client:
+        return jsonify({"error": "Chat persistence not available"}), 503
+    
+    try:
+        result = supabase_client.table("chat_messages") \
+            .insert({
+                "conversation_id": conversation_id,
+                "role": role,
+                "content": content,
+                "metadata": metadata
+            }) \
+            .execute()
+        
+        if result.data:
+            return jsonify({"message": result.data[0], "ok": True})
+        return jsonify({"error": "Failed to add message"}), 500
+    except Exception as e:
+        print(f"Error adding message: {e}")
+        return jsonify({"error": str(e), "ok": False}), 500
+
+
+@app.route("/api/conversations/<conversation_id>", methods=["DELETE"])
+def delete_conversation(conversation_id: str):
+    """Delete a conversation and all its messages."""
+    if not supabase_client:
+        return jsonify({"error": "Chat persistence not available"}), 503
+    
+    try:
+        # Messages will be cascade deleted
+        supabase_client.table("chat_conversations") \
+            .delete() \
+            .eq("id", conversation_id) \
+            .execute()
+        
+        return jsonify({"ok": True, "message": "Conversation deleted"})
+    except Exception as e:
+        print(f"Error deleting conversation: {e}")
+        return jsonify({"error": str(e), "ok": False}), 500
+
+
+@app.route("/api/conversations/<conversation_id>/title", methods=["PATCH"])
+def update_conversation_title(conversation_id: str):
+    """Update conversation title."""
+    data = request.get_json() or {}
+    title = data.get("title")
+    
+    if not title:
+        return jsonify({"error": "title required"}), 400
+    
+    if not supabase_client:
+        return jsonify({"error": "Chat persistence not available"}), 503
+    
+    try:
+        result = supabase_client.table("chat_conversations") \
+            .update({"title": title}) \
+            .eq("id", conversation_id) \
+            .execute()
+        
+        return jsonify({"ok": True, "conversation": result.data[0] if result.data else None})
+    except Exception as e:
+        print(f"Error updating conversation title: {e}")
+        return jsonify({"error": str(e), "ok": False}), 500
 
 
 if __name__ == '__main__':
